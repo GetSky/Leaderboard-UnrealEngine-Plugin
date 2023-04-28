@@ -12,12 +12,13 @@
 
 DECLARE_LOG_CATEGORY_CLASS(LogLeaderboardWidget, All, All);
 
-void ULeaderboardWidget::ShowLeaderboard(const FString& Level, const int32 Score)
+void ULeaderboardWidget::ShowLeaderboard(const FString& Level, const FString& Username,  const int32 Score)
 {
 	RequestLevel = Level;
 	PlayerPositionInLeaderboard = -1;
 
 	const auto RequestObj = MakeShared<FJsonObject>();
+	RequestObj->SetStringField("username", Username);
 	RequestObj->SetStringField("level", Level);
 	RequestObj->SetNumberField("score", Score);
 
