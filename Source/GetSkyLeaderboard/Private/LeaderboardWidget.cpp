@@ -12,7 +12,19 @@
 
 DECLARE_LOG_CATEGORY_CLASS(LogLeaderboardWidget, All, All);
 
-void ULeaderboardWidget::ShowLeaderboard(const FString& Level, const FString& Username,  const int32 Score)
+void ULeaderboardWidget::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	URLConnect =
+		GetDefault<UPluginSettings>()->TLS
+			? "https://"
+			: "http://"
+			+ GetDefault<UPluginSettings>()->URI + ":"
+			+ GetDefault<UPluginSettings>()->Port + "/score";
+}
+
+void ULeaderboardWidget::SendScore(const FString& Level, const FString& Username, const int32 Score)
 {
 	RequestLevel = Level;
 	PlayerPositionInLeaderboard = -1;
@@ -31,24 +43,12 @@ void ULeaderboardWidget::ShowLeaderboard(const FString& Level, const FString& Us
 	Request->SetURL(URLConnect);
 	Request->SetVerb("POST");
 	Request->SetHeader("Content-Type", "application/json");
-	Request->OnProcessRequestComplete().BindUObject(this, &ULeaderboardWidget::GetAnUpToDateList);
+	Request->OnProcessRequestComplete().BindUObject(this, &ULeaderboardWidget::GetAnUpToDateLeaderboard);
 	Request->SetContentAsString(RequestBody);
 	Request->ProcessRequest();
 }
 
-void ULeaderboardWidget::NativeOnInitialized()
-{
-	Super::NativeOnInitialized();
-
-	URLConnect =
-		GetDefault<UPluginSettings>()->TLS
-			? "https://"
-			: "http://"
-			+ GetDefault<UPluginSettings>()->URI + ":"
-			+ GetDefault<UPluginSettings>()->Port + "/score";
-}
-
-void ULeaderboardWidget::GetAnUpToDateList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess)
+void ULeaderboardWidget::GetAnUpToDateLeaderboard(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess)
 {
 	if (bSuccess == false)
 	{
@@ -59,13 +59,13 @@ void ULeaderboardWidget::GetAnUpToDateList(FHttpRequestPtr Request, FHttpRespons
 	PlayerPositionInLeaderboard = FCString::Atoi(*Response->GetContentAsString());
 
 	const FHttpRequestRef HTTPRequest = FHttpModule::Get().CreateRequest();
-	HTTPRequest->OnProcessRequestComplete().BindUObject(this, &ULeaderboardWidget::OnResponseReceived);
+	HTTPRequest->OnProcessRequestComplete().BindUObject(this, &ULeaderboardWidget::RenderLeaderboard);
 	HTTPRequest->SetURL(URLConnect + "/" + RequestLevel);
 	HTTPRequest->SetVerb("GET");
 	HTTPRequest->ProcessRequest();
 }
 
-void ULeaderboardWidget::OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess)
+void ULeaderboardWidget::RenderLeaderboard(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess)
 {
 	if (bSuccess == false)
 	{
