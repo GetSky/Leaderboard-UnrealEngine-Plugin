@@ -18,7 +18,7 @@ class GETSKYLEADERBOARD_API ULeaderboardWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ShowLeaderboard(const FString& Level, const int32 Score);
+	void ShowLeaderboard(const FString& Level, const FString& Username, const int32 Score);
 
 protected:
 	virtual void NativeOnInitialized() override;
