@@ -21,6 +21,7 @@ void ULeaderboardWidget::ShowLeaderboard(const FString& Level, const int32 Score
 	RequestObj->SetStringField("level", Level);
 	RequestObj->SetNumberField("score", Score);
 
+
 	FString RequestBody;
 	const auto Writer = TJsonWriterFactory<>::Create(&RequestBody);
 	FJsonSerializer::Serialize(RequestObj, Writer);
@@ -38,7 +39,12 @@ void ULeaderboardWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	URLConnect = "http://" + GetDefault<UPluginSettings>()->URI + ":" + GetDefault<UPluginSettings>()->Port + "/score";
+	URLConnect =
+		GetDefault<UPluginSettings>()->TLS
+			? "https://"
+			: "http://"
+			+ GetDefault<UPluginSettings>()->URI + ":"
+			+ GetDefault<UPluginSettings>()->Port + "/score";
 }
 
 void ULeaderboardWidget::GetAnUpToDateList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess)
