@@ -18,7 +18,7 @@ class GETSKYLEADERBOARD_API ULeaderboardWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ShowLeaderboard(const FString& Level, const FString& Username, const int32 Score);
+	void SendScore(const FString& Level, const FString& Username, const int32 Score);
 
 protected:
 	virtual void NativeOnInitialized() override;
@@ -26,8 +26,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<ULeaderboardRowWidget> LeaderboardRowWidgetClass;
 
-	void GetAnUpToDateList(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess);
-	void OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess);
+	void GetAnUpToDateLeaderboard(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess);
+	void RenderLeaderboard(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bSuccess);
 
 private:
 	FString URLConnect;
