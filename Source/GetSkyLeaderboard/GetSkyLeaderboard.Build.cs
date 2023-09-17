@@ -20,12 +20,15 @@ public class GetSkyLeaderboard : ModuleRules
 				// ... add other private include paths required here ...
 			}
 			);
-			
 		
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "HTTP", "Json", "DeveloperSettings", "UMG"
+				"Core", 
+				"HTTP", 
+				"Json", 
+				"DeveloperSettings", 
+				"UMG"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
